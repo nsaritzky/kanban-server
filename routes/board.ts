@@ -145,6 +145,7 @@ boardRouter.patch("/kanban/api/task", secured, async (req, res) => {
     try {
         const board = await Board.findById(req.body.boardId).orFail()
         const task = board.columns.reduce<Task | null>((acc, column) => {
+            /// @ts-ignore
             const foundTask = column.tasks.id(req.body.taskId)
             return foundTask || acc
         }, null)
@@ -161,6 +162,7 @@ boardRouter.patch("/kanban/api/task", secured, async (req, res) => {
             }
             if (req.body.task.status !== task.status) {
                 // Move task to new column
+                // @ts-ignore
                 task.parent().tasks.pull(task)
                 const newColumn = board.columns.find(
                     (col) => col.title === req.body.task.status,
@@ -169,6 +171,7 @@ boardRouter.patch("/kanban/api/task", secured, async (req, res) => {
             }
         }
         Object.entries(req.body.task).forEach(([key, value]) => {
+            // @ts-ignore
             task[key] = value
         })
         await board.save()
@@ -195,6 +198,7 @@ boardRouter.post("/kanban/api/task/move", secured, async (req, res) => {
     try {
         const board = await Board.findById(req.body.boardId).orFail()
         const task = board.columns.reduce<Task | null>((acc, column) => {
+            // @ts-ignore
             const foundTask = column.tasks.id(req.body.taskId)
             return foundTask || acc
         }, null)
