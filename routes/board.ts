@@ -20,7 +20,7 @@ boardRouter.get("/kanban/api/user/boards", secured, async (_req, res) => {
 boardRouter.get("/kanban/api/board/:id", secured, async (req, res) => {
     try {
         const objectId = new Types.ObjectId(req.params.id)
-        if (res.locals.user?.boards.includes(objectId)) {
+        if (!res.locals.user?.boards.includes(objectId)) {
             return res.status(404).send("Board not found")
         }
         const board = await Board.findById(objectId).lean()
