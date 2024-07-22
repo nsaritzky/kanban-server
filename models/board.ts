@@ -10,7 +10,7 @@ export interface Task {
 
 const taskSchema = new Schema<Task>({
     title: { type: String, required: true },
-    description: { type: String, required: true },
+    description: { type: String, default: "" },
     subtasks: [
         {
             title: { type: String, required: true },

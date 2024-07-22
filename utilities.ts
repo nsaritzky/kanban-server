@@ -8,7 +8,7 @@ export const secured = (_req: Request, res: Response, next: NextFunction) => {
     if (!res.locals.user) {
         return res.status(401).send("Unauthorized")
     }
-    next()
+    return next()
 }
 
 export const arrayMove = <T>(arr: T[], from: number, to: number) => {

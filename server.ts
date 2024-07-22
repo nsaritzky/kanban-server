@@ -1,7 +1,8 @@
 import cors from "cors"
 import "dotenv/config"
 import express from "express"
-import { verifyRequestOrigin, type Session, type User } from "lucia"
+import helmet from "helmet"
+import { type Session, type User } from "lucia"
 import { auth } from "./auth"
 import connectDB from "./connectDB"
 import boardRouter from "./routes/board"
@@ -13,24 +14,15 @@ const app = express()
 
 connectDB()
 
-app.use(cors())
+app.use(
+    cors({
+        origin: process.env.FRONTEND_URL,
+        credentials: true,
+        allowedHeaders: ["Content-Type", "Authorization"],
+    }),
+)
 app.use(express.json())
-
-app.use((req, res, next) => {
-    if (req.method == "GET") {
-        return next()
-    }
-    const originHeader = req.headers.origin
-    const hostHeader = req.headers.host
-    if (
-        !originHeader ||
-        !hostHeader ||
-        !verifyRequestOrigin(originHeader, [hostHeader])
-    ) {
-        return res.status(403).send("Invalid origin")
-    }
-    return next()
-})
+app.use(helmet({ crossOriginResourcePolicy: { policy: "same-origin" } }))
 
 app.use(async (req, res, next) => {
     const sessionId = auth.readSessionCookie(req.headers.cookie ?? "")
