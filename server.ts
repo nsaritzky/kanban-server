@@ -1,6 +1,7 @@
 import cors from "cors"
 import "dotenv/config"
 import express from "express"
+import { rateLimit } from "express-rate-limit"
 import helmet from "helmet"
 import { type Session, type User } from "lucia"
 import { auth } from "./auth"
@@ -14,6 +15,18 @@ const app = express()
 
 connectDB()
 
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    message: "Too many requests",
+})
+
+const apiLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 100,
+    message: "Too many requests",
+})
+
 app.use(
     cors({
         origin: process.env.FRONTEND_URL,
@@ -23,6 +36,8 @@ app.use(
 )
 app.use(express.json())
 app.use(helmet({ crossOriginResourcePolicy: { policy: "same-origin" } }))
+app.use("/kanban/api/auth", authLimiter)
+app.use("/kanban/api", apiLimiter)
 
 app.use(async (req, res, next) => {
     const sessionId = auth.readSessionCookie(req.headers.cookie ?? "")
