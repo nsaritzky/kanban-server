@@ -1,4 +1,3 @@
-import cors from "cors"
 import "dotenv/config"
 import express from "express"
 import { rateLimit } from "express-rate-limit"
@@ -26,13 +25,13 @@ const apiLimiter = rateLimit({
     message: "Too many requests",
 })
 
-app.use(
-    cors({
-        origin: process.env.FRONTEND_URL,
-        credentials: true,
-        allowedHeaders: ["Content-Type", "Authorization"],
-    }),
-)
+// app.use(
+//     cors({
+//         origin: process.env.FRONTEND_URL,
+//         credentials: true,
+//         allowedHeaders: ["Content-Type", "Authorization"],
+//     }),
+// )
 app.use(express.json())
 app.use(helmet({ crossOriginResourcePolicy: { policy: "same-origin" } }))
 app.use(httpLogger)

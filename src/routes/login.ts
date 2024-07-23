@@ -17,7 +17,7 @@ const googleLoginRouter = express.Router()
 
 const codeVerifier = generateCodeVerifier()
 
-googleLoginRouter.get("/kanban/api/login/google", async (_, res) => {
+googleLoginRouter.get("/kanban/login/google", async (_, res) => {
     const state = generateState()
     const url = await google.createAuthorizationURL(state, codeVerifier, {
         scopes: ["email"],
@@ -43,7 +43,7 @@ googleLoginRouter.get("/kanban/api/login/google", async (_, res) => {
         .redirect(url.toString())
 })
 
-googleLoginRouter.get("/kanban/api/auth/google/callback", async (req, res) => {
+googleLoginRouter.get("/kanban/auth/google/callback", async (req, res) => {
     const code = req.query.code?.toString()
     const state = req.query.state?.toString()
     const cookies = parseCookies(req.headers.cookie ?? "")
@@ -79,14 +79,14 @@ googleLoginRouter.get("/kanban/api/auth/google/callback", async (req, res) => {
     }
 })
 
-googleLoginRouter.get("/kanban/api/logout", async (_req, res) => {
+googleLoginRouter.get("/kanban/logout", async (_req, res) => {
     const sessionId = res.locals.session?.id ?? ""
     auth.invalidateSession(sessionId)
     res.cookie("isAuthenticated", "false", { httpOnly: false })
     return res.send()
 })
 
-googleLoginRouter.get("/kanban/api/me", async (_req, res) => {
+googleLoginRouter.get("/kanban/me", async (_req, res) => {
     if (!res.locals.user) {
         return res.status(401).send("Unauthorized")
     } else {

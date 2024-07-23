@@ -7,7 +7,7 @@ import { secured } from "../utilities.js"
 
 const boardRouter = express.Router()
 
-boardRouter.get("/kanban/api/user/boards", secured, async (_req, res) => {
+boardRouter.get("/kanban/user/boards", secured, async (_req, res) => {
     try {
         const boards = await Board.find({
             _id: { $in: res.locals.user?.boards },
@@ -19,7 +19,7 @@ boardRouter.get("/kanban/api/user/boards", secured, async (_req, res) => {
     }
 })
 
-boardRouter.get("/kanban/api/board/:id", secured, async (req, res) => {
+boardRouter.get("/kanban/board/:id", secured, async (req, res) => {
     try {
         const objectId = new Types.ObjectId(req.params.id)
         if (!res.locals.user?.boards.includes(objectId)) {
@@ -33,7 +33,7 @@ boardRouter.get("/kanban/api/board/:id", secured, async (req, res) => {
     }
 })
 
-boardRouter.post("/kanban/api/board/new", secured, async (req, res) => {
+boardRouter.post("/kanban/board/new", secured, async (req, res) => {
     try {
         const board = await mongoose.connection.transaction(async () => {
             const user = res.locals.user
@@ -53,7 +53,7 @@ boardRouter.post("/kanban/api/board/new", secured, async (req, res) => {
     }
 })
 
-boardRouter.delete("/kanban/api/board/:id", secured, async (req, res) => {
+boardRouter.delete("/kanban/board/:id", secured, async (req, res) => {
     try {
         await Board.findByIdAndDelete(req.params.id)
         return res.status(200).send()
@@ -63,7 +63,7 @@ boardRouter.delete("/kanban/api/board/:id", secured, async (req, res) => {
     }
 })
 
-boardRouter.post("/kanban/api/column", secured, async (req, res) => {
+boardRouter.post("/kanban/column", secured, async (req, res) => {
     try {
         const board = await Board.findById(req.body.boardId).orFail()
         // We validate unique column titles this way because of the way Mongoose handles
@@ -89,7 +89,7 @@ boardRouter.post("/kanban/api/column", secured, async (req, res) => {
     }
 })
 
-boardRouter.patch("/kanban/api/column", secured, async (req, res) => {
+boardRouter.patch("/kanban/column", secured, async (req, res) => {
     try {
         const board = await Board.findById(req.body.boardId).orFail()
         if (req.body.columnId) {
@@ -109,7 +109,7 @@ boardRouter.patch("/kanban/api/column", secured, async (req, res) => {
     }
 })
 
-boardRouter.delete("/kanban/api/column", secured, async (req, res) => {
+boardRouter.delete("/kanban/column", secured, async (req, res) => {
     try {
         await Board.findByIdAndUpdate(req.body.boardId, {
             $pull: {
@@ -123,7 +123,7 @@ boardRouter.delete("/kanban/api/column", secured, async (req, res) => {
     }
 })
 
-boardRouter.post("/kanban/api/task", secured, async (req, res) => {
+boardRouter.post("/kanban/task", secured, async (req, res) => {
     try {
         const board = await Board.findById(req.body.boardId).orFail()
         const columnId = board.columns.find(
@@ -149,7 +149,7 @@ boardRouter.post("/kanban/api/task", secured, async (req, res) => {
     }
 })
 
-boardRouter.patch("/kanban/api/task", secured, async (req, res) => {
+boardRouter.patch("/kanban/task", secured, async (req, res) => {
     try {
         const board = await Board.findById(req.body.boardId).orFail()
         const task = board.columns.reduce<Task | null>((acc, column) => {
@@ -190,7 +190,7 @@ boardRouter.patch("/kanban/api/task", secured, async (req, res) => {
     }
 })
 
-boardRouter.delete("/kanban/api/task", secured, async (req, res) => {
+boardRouter.delete("/kanban/task", secured, async (req, res) => {
     try {
         await Board.findByIdAndUpdate(req.body.boardId, {
             $pull: {
@@ -203,7 +203,7 @@ boardRouter.delete("/kanban/api/task", secured, async (req, res) => {
     }
 })
 
-boardRouter.post("/kanban/api/task/move", secured, async (req, res) => {
+boardRouter.post("/kanban/task/move", secured, async (req, res) => {
     try {
         const board = await Board.findById(req.body.boardId).orFail()
         const task = board.columns.reduce<Task | null>((acc, column) => {

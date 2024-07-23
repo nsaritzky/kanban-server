@@ -5,7 +5,7 @@ import { Lucia } from "lucia"
 import mongoose from "mongoose"
 import type { IUser } from "./models/user"
 
-const REDIRECT_URL = "http://localhost:3000/kanban/api/auth/google/callback"
+const REDIRECT_URL = "http://api.requirenathan.com/kanban/auth/google/callback"
 
 mongoose.connect(process.env.MONGODB_URL!)
 
@@ -17,7 +17,8 @@ export const auth = new Lucia(
     {
         sessionCookie: {
             attributes: {
-                secure: process.env.NODE_ENV === "production",
+                secure: true,
+                sameSite: "none",
             },
         },
         getUserAttributes: (attributes) => ({
