@@ -4,8 +4,8 @@ import express from "express"
 import { generateIdFromEntropySize } from "lucia"
 import { parseCookies, serializeCookie } from "oslo/cookie"
 import { parseJWT } from "oslo/jwt"
-import { auth, google } from "../auth"
-import { User } from "../models"
+import { auth, google } from "../auth.js"
+import { User } from "../models/user.js"
 
 interface GoogleUser {
     email: string

@@ -1,8 +1,9 @@
 import express from "express"
 import mongoose, { Types } from "mongoose"
-import { Board, User } from "../models"
-import { Task } from "../models/board"
-import { secured } from "../utilities"
+import { logger } from "../logger.js"
+import { Board, Task } from "../models/board.js"
+import { User } from "../models/user.js"
+import { secured } from "../utilities.js"
 
 const boardRouter = express.Router()
 
@@ -13,6 +14,7 @@ boardRouter.get("/kanban/api/user/boards", secured, async (_req, res) => {
         }).lean()
         return res.status(200).send({ boards })
     } catch (e) {
+        logger.error(e)
         return res.status(500).send(e)
     }
 })
@@ -26,6 +28,7 @@ boardRouter.get("/kanban/api/board/:id", secured, async (req, res) => {
         const board = await Board.findById(objectId).lean()
         return res.status(200).send(board)
     } catch (e) {
+        logger.error(e)
         return res.status(500).send(e)
     }
 })
@@ -45,7 +48,7 @@ boardRouter.post("/kanban/api/board/new", secured, async (req, res) => {
         })
         return res.status(200).send({ board: board.toJSON() })
     } catch (e) {
-        console.log(e)
+        logger.error(e)
         res.status(500).send(e)
     }
 })
@@ -55,6 +58,7 @@ boardRouter.delete("/kanban/api/board/:id", secured, async (req, res) => {
         await Board.findByIdAndDelete(req.params.id)
         return res.status(200).send()
     } catch (e) {
+        logger.error(e)
         return res.status(500).send(e)
     }
 })
@@ -80,6 +84,7 @@ boardRouter.post("/kanban/api/column", secured, async (req, res) => {
             .status(200)
             .send({ columnId: board.columns[board.columns.length - 1]._id })
     } catch (e) {
+        logger.error(e)
         res.status(500).send(e)
     }
 })
@@ -99,6 +104,7 @@ boardRouter.patch("/kanban/api/column", secured, async (req, res) => {
             return res.status(200).send()
         }
     } catch (e) {
+        logger.error(e)
         res.status(500).send(e)
     }
 })
@@ -112,6 +118,7 @@ boardRouter.delete("/kanban/api/column", secured, async (req, res) => {
         })
         return res.status(200).send()
     } catch (e) {
+        logger.error(e)
         return res.status(500).send(e)
     }
 })
@@ -137,6 +144,7 @@ boardRouter.post("/kanban/api/task", secured, async (req, res) => {
             taskId: column!.tasks[column!.tasks.length - 1]._id?.toString(),
         })
     } catch (e) {
+        logger.error(e)
         res.status(500).send(e)
     }
 })
@@ -177,19 +185,20 @@ boardRouter.patch("/kanban/api/task", secured, async (req, res) => {
         await board.save()
         return res.status(200).send()
     } catch (e) {
+        logger.error(e)
         res.status(500).send(e)
     }
 })
 
 boardRouter.delete("/kanban/api/task", secured, async (req, res) => {
     try {
-        console.log("hello", req.body)
         await Board.findByIdAndUpdate(req.body.boardId, {
             $pull: {
                 "columns.$[].tasks": { _id: req.body.taskId },
             },
         })
     } catch (e) {
+        logger.error(e)
         return res.status(500).send(e)
     }
 })
@@ -205,7 +214,8 @@ boardRouter.post("/kanban/api/task/move", secured, async (req, res) => {
         if (!task) {
             return res.status(400).send("Invalid task ID")
         }
-        const oldColumn = board.columns.find((col) => col.title === task.status)
+        // @ts-ignore
+        const oldColumn = task.parent()
         const newColumn = board.columns.find(
             (col) => col.title === (req.body.newStatus || task.status),
         )
@@ -220,6 +230,7 @@ boardRouter.post("/kanban/api/task/move", secured, async (req, res) => {
         await board.save()
         return res.status(200).send()
     } catch (e) {
+        logger.error(e)
         res.status(500).send(e)
     }
 })

@@ -4,12 +4,11 @@ import express from "express"
 import { rateLimit } from "express-rate-limit"
 import helmet from "helmet"
 import { type Session, type User } from "lucia"
-import { auth } from "./auth"
-import connectDB from "./connectDB"
-import boardRouter from "./routes/board"
-import googleLoginRouter from "./routes/login"
-
-const url = process.env.MONGODB_URL
+import { auth } from "./auth.js"
+import connectDB from "./connectDB.js"
+import { httpLogger, logger } from "./logger.js"
+import boardRouter from "./routes/board.js"
+import googleLoginRouter from "./routes/login.js"
 
 const app = express()
 
@@ -36,6 +35,7 @@ app.use(
 )
 app.use(express.json())
 app.use(helmet({ crossOriginResourcePolicy: { policy: "same-origin" } }))
+app.use(httpLogger)
 app.use("/kanban/api/auth", authLimiter)
 app.use("/kanban/api", apiLimiter)
 
@@ -73,7 +73,9 @@ app.use(async (req, res, next) => {
 app.use(googleLoginRouter)
 app.use(boardRouter)
 
-app.listen(3000)
+app.listen(process.env.PORT, () => {
+    logger.info(`Server running on port ${process.env.PORT}`)
+})
 
 declare global {
     namespace Express {
