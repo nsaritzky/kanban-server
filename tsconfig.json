@@ -12,5 +12,6 @@
         "strict": true,
         "skipLibCheck": true
     },
+    "files": ["./src/server.ts"],
     "exclude": ["node_modules", "dist", "client"]
 }
