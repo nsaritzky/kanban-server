@@ -41,7 +41,10 @@ app.use(async (req, res, next) => {
 
     const { session, user } = await auth.validateSession(sessionId)
     if (session) {
-        res.cookie("isAuthenticated", "true", { httpOnly: false })
+        res.cookie("isAuthenticated", "true", {
+            httpOnly: false,
+            domain: ".requirenathan.com",
+        })
     }
 
     if (session && session.fresh) {

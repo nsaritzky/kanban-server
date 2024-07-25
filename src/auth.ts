@@ -18,7 +18,8 @@ export const auth = new Lucia(
         sessionCookie: {
             attributes: {
                 secure: true,
-                sameSite: "none",
+                sameSite: "lax",
+                domain: ".requirenathan.com",
             },
         },
         getUserAttributes: (attributes) => ({

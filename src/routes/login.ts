@@ -82,7 +82,10 @@ googleLoginRouter.get("/kanban/auth/google/callback", async (req, res) => {
 googleLoginRouter.get("/kanban/logout", async (_req, res) => {
     const sessionId = res.locals.session?.id ?? ""
     auth.invalidateSession(sessionId)
-    res.cookie("isAuthenticated", "false", { httpOnly: false })
+    res.cookie("isAuthenticated", "false", {
+        httpOnly: false,
+        domain: ".requirenathan.com",
+    })
     return res.send()
 })
 

@@ -1,7 +1,12 @@
 import pino from "pino"
 import pinoHttp from "pino-http"
 
-const stream = pino.destination({ dest: "logs/server.log" })
+const stream = pino.destination({
+  dest:
+    process.env.NODE_ENV == "production"
+      ? "/var/www/html/kanban-server/logs/server.log"
+      : "logs/server.log",
+})
 
 export const logger =
   process.env.NODE_ENV === "production"
