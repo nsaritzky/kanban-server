@@ -65,9 +65,13 @@ app.use(async (req, res, next) => {
 app.use(googleLoginRouter)
 app.use(boardRouter)
 
-app.listen(process.env.PORT, () => {
-    logger.info(`Server running on port ${process.env.PORT}`)
-})
+if (process.env.PORT) {
+    app.listen(process.env.PORT, () => {
+        logger.info(`Server running on port ${process.env.PORT}`)
+    })
+} else {
+    logger.error("PORT not defined")
+}
 
 declare global {
     namespace Express {
