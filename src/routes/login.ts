@@ -72,6 +72,10 @@ googleLoginRouter.get("/kanban/auth/google/callback", async (req, res) => {
         const sessionCookie = auth.createSessionCookie(session.id)
         return res
             .appendHeader("Set-Cookie", sessionCookie.serialize())
+            .cookie("isAuthenticated", "true", {
+                httpOnly: false,
+                domain: ".requirenathan.com",
+            })
             .redirect(process.env.FRONTEND_URL!)
     } catch (e) {
         console.error(e)
